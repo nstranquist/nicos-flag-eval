@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
-import { Evaluator } from "../../ts/evaluator.ts";
+import { Evaluator } from "../functions/_runtime/evaluator.ts";
 
 const extractRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 const hostRuntime = join(extractRoot, "host/functions/_runtime/flags.runtime.json");

@@ -18,11 +18,8 @@ remains `~/dev/nicos-flags`. The system remains `ndev.flags`. Read
 
 ## What this is not
 
-- Not `ndev flags`.
-- Not a visibility flip of `~/dev/nicos-flags`.
-- Not a bun rewrite.
-- Not the Pages host, Turso control plane, or Svelte console. Those are
-  Phase 1: [`docs/PHASE-1-HOST.md`](docs/PHASE-1-HOST.md).
+- Not `ndev flags`, a visibility flip of `~/dev/nicos-flags`, or a bun rewrite.
+- The sanitized demo host in `host/` is in-tree. It is not a public deploy.
 
 ## Quick start
 
@@ -63,7 +60,8 @@ node --experimental-strip-types examples/eval-demo.mjs
 | `schemas/demo.manifest.json` | Synthetic catalog |
 | `schemas/parity-fixture.json` | Nine frozen bucket tuples |
 | `docs/OFFBOARD.md` | Full decision + implementable spec |
-| `docs/PHASE-1-HOST.md` | Later host/console sanitize |
+| `host/` | Sanitized demo Pages + console |
+| `docs/PHASE-1-HOST.md` | Host extract runbook |
 
 ## OpenFeature and experiments
 

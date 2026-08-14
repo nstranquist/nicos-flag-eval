@@ -48,7 +48,14 @@ fmt:
 	gofmt -w *.go cmd/eval-demo/main.go cmd/parity/main.go
 
 host-check:
-	node --test --experimental-strip-types host/functions/_lib/host.test.ts host/scripts/evaluate-demo.test.mjs
+	node --test --experimental-strip-types \
+		host/functions/_lib/host.test.ts \
+		host/functions/_lib/flag-contract.test.ts \
+		host/functions/api/evaluate.test.ts \
+		host/functions/api/public-reads.test.ts \
+		host/functions/api/overrides/write.test.ts \
+		host/scripts/evaluate-demo.test.mjs
+	node --experimental-strip-types scripts/check-evaluator-copy.mjs
 	node scripts/check-stories.mjs
 	@if [ -x host/node_modules/.bin/tsc ]; then \
 		host/node_modules/.bin/tsc -p host/functions/tsconfig.json --noEmit; \

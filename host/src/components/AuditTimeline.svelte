@@ -6,10 +6,11 @@
     flagKey: string;
     /** Bumped by parent after a save/clear → triggers refresh */
     refreshToken: number;
+    events?: AuditEvent[];
   }
-  let { flagKey, refreshToken }: Props = $props();
+  let { flagKey, refreshToken, events: fixtureEvents }: Props = $props();
 
-  let events: AuditEvent[] = $state([]);
+  let events: AuditEvent[] = $state(fixtureEvents ?? []);
   let loading = $state(true);
   let err = $state("");
 
@@ -33,6 +34,11 @@
 
   $effect(() => {
     void flagKey; void refreshToken;
+    if (fixtureEvents) {
+      events = fixtureEvents;
+      loading = false;
+      return;
+    }
     load();
   });
 

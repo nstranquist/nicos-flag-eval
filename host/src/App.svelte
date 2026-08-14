@@ -145,10 +145,8 @@
         <span>env</span>
         <select bind:value={envName}>
           <option value="default">default</option>
-          <option value="dev">dev</option>
           <option value="staging">staging</option>
-          <option value="iat">iat</option>
-          <option value="prod">prod</option>
+          <option value="production">production</option>
         </select>
       </div>
       {#if version}

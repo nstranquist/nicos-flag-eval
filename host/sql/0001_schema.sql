@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS overrides (
 CREATE INDEX IF NOT EXISTS overrides_by_key ON overrides (key);
 CREATE INDEX IF NOT EXISTS overrides_by_env ON overrides (env);
 
--- KEP-006: append-only audit trail mirroring ~/.nicos-dev/flags/audit.jsonl.
+-- KEP-006: append-only audit trail for operator writes.
 CREATE TABLE IF NOT EXISTS audit_events (
   id     INTEGER PRIMARY KEY AUTOINCREMENT,
   ts     TEXT NOT NULL,

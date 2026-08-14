@@ -15,7 +15,6 @@
     { source: "sticky-bucket",     label: "Sticky bucket",      group: "Cloud" },
     { source: "force-exclude",     label: "Force exclude",      group: "Pinned" },
     { source: "force-include",     label: "Force include",      group: "Pinned" },
-    { source: "legacy-gate",       label: "Legacy gate",        group: "Engine" },
     { source: "rule",              label: "Rule eval",          group: "Engine" },
     { source: "kill-date",         label: "Kill date",          group: "Engine" },
     { source: "default",           label: "Manifest default",   group: "Engine" },

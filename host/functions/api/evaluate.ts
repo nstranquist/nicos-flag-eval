@@ -3,9 +3,9 @@
 // curated TS evaluator running against the embedded manifest. Source
 // tags on the response mirror the Go store contract.
 
-import { Evaluator, type FlagsManifest, type EvalContext } from "../_runtime/evaluator";
-import manifestJson from "../_runtime/flags.runtime.json";
-import { db, json, type Env } from "../_lib/turso";
+import { Evaluator, type FlagsManifest, type EvalContext } from "../_runtime/evaluator.ts";
+import manifestJson from "../_runtime/flags.runtime.json" with { type: "json" };
+import { db, json, type Env } from "../_lib/turso.ts";
 
 const manifest = manifestJson as unknown as FlagsManifest;
 let evaluator: Evaluator | null = null;
@@ -29,7 +29,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!body || typeof body.key !== "string") {
     return json({ ok: false, error: "missing key" }, 400);
   }
-  const ctx: EvalContext & { env?: string } = body.ctx ?? {};
+  const ctx = publicEvalContext(body.ctx);
 
   // Tier ahead of the engine: live cloud overrides from Turso. Two
   // env-scope lookups — first the requested env, then "default" as
@@ -123,3 +123,19 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
   return json({ ok: true, ...res });
 };
+
+function publicEvalContext(raw: EvalContext | undefined): EvalContext {
+  if (!raw || typeof raw !== "object") return {};
+  const attrs =
+    raw.attrs && typeof raw.attrs === "object" && !Array.isArray(raw.attrs)
+      ? Object.fromEntries(
+          Object.entries(raw.attrs).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+        )
+      : undefined;
+  return {
+    ...(typeof raw.userId === "string" ? { userId: raw.userId } : {}),
+    ...(typeof raw.env === "string" ? { env: raw.env } : {}),
+    ...(typeof raw.project === "string" ? { project: raw.project } : {}),
+    ...(attrs && Object.keys(attrs).length > 0 ? { attrs } : {}),
+  };
+}

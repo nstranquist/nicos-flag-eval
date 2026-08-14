@@ -5,7 +5,7 @@ export type Scope = "cross-project";
 export type EvalSource =
   | "process-flag" | "env" | "personal-override" | "repo-override"
   | "cloud-override" | "sticky-bucket" | "force-include" | "force-exclude"
-  | "legacy-gate" | "rule" | "kill-date" | "default" | "missing";
+  | "rule" | "kill-date" | "default" | "missing";
 
 export interface FlagSpec {
   key: string;

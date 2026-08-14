@@ -16,7 +16,7 @@
      *  per-user resolution across envs without re-typing). */
     userId?: string;
   }
-  let { flagKey, envs = ["default", "dev", "staging", "iat", "prod"], userId }: Props = $props();
+  let { flagKey, envs = ["default", "staging", "production"], userId }: Props = $props();
 
   let results: Record<string, EvalResult | { error: string }> = $state({});
   let loading = $state(true);

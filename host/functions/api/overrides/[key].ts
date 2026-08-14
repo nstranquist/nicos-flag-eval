@@ -1,9 +1,9 @@
 // POST   /api/overrides/:key   { value, scope?, env?, reason? }
 // DELETE /api/overrides/:key?scope=cloud&env=default
 
-import { db, actorFromRequest, errorCode, json, nowISO, type Env } from "../../_lib/turso";
-import { encodedValue, isRegisteredFlag, parseStoredValue } from "../../_lib/flag-contract";
-import { publishLiveStreamEvent } from "../../_lib/stream-publish";
+import { db, actorFromRequest, errorCode, json, nowISO, type Env } from "../../_lib/turso.ts";
+import { encodedValue, parseStoredValue, registeredOverrideFlag } from "../../_lib/flag-contract.ts";
+import { publishLiveStreamEvent } from "../../_lib/stream-publish.ts";
 
 const scopes = new Set(["cloud", "force-include", "force-exclude"]);
 
@@ -18,12 +18,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
   }
   const key = (params as { key?: string }).key;
   if (!key) return json({ ok: false, error: "missing key" }, 400);
-  if (!isRegisteredFlag(key)) return json({ ok: false, error: "unknown flag" }, 404);
   if (body.value === undefined) return json({ ok: false, error: "missing value" }, 400);
 
   const scope = String(body.scope ?? "cloud");
   const envName = String(body.env ?? "default");
   if (!scopes.has(scope)) return json({ ok: false, error: "invalid scope" }, 400);
+  if (!registeredOverrideFlag(scope, key)) return json({ ok: false, error: "unknown flag" }, 404);
   const reason = body.reason ? String(body.reason) : null;
   const encoded = encodedValue(body.value);
   const client = db(env);
@@ -73,11 +73,11 @@ export const onRequestDelete: PagesFunction<Env> = async ({ request, env, params
   if (!actor || actor.role === "viewer") return json({ ok: false, error: "forbidden" }, 403);
   const key = (params as { key?: string }).key;
   if (!key) return json({ ok: false, error: "missing key" }, 400);
-  if (!isRegisteredFlag(key)) return json({ ok: false, error: "unknown flag" }, 404);
   const url = new URL(request.url);
   const scope = url.searchParams.get("scope") ?? "cloud";
   const envName = url.searchParams.get("env") ?? "default";
   if (!scopes.has(scope)) return json({ ok: false, error: "invalid scope" }, 400);
+  if (!registeredOverrideFlag(scope, key)) return json({ ok: false, error: "unknown flag" }, 404);
 
   const client = db(env);
   if (!client) return json({ ok: true, key, cleared: false, persisted: false, note: "Turso is not configured" });

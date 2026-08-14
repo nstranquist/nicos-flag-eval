@@ -9,4 +9,4 @@
   });
 </script>
 
-<Story name="Promo banner" args={{ flag: promoFlag }} />
+<Story name="Promo banner" args={{ flag: promoFlag, previewResult: promoOn }} />

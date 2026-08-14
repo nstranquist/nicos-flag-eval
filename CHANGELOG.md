@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4] - 2026-08-14
+
+- Accept force-list writes for `<flag>:<user>` keys.
+- Ignore client override maps on `/api/evaluate`.
+- Drive public-read attribution and force-write tests through handlers.
+- Strip leftover factory console copy and keep Storybook fixtures local.
+- Gate the vendored evaluator copy in `make host-check`.
+
 ## [0.1.3] - 2026-08-14
 
 - Demo Storybook stories for checkout/search flags.

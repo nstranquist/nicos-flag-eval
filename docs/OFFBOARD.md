@@ -1,23 +1,21 @@
 # Flags extract offboard
 
 Date: 2026-08-14  
-Status: Phase 0 landed locally. Host and console are specified, not shipped.  
-This document is the implementable source of truth for a later agent. Do not
-rely on the originating chat.
+Status: Phase 0 engine and Phase 1 sanitized host are in this tree. No public
+remote. This document is the implementable source of truth for a later agent.
+Do not rely on the originating chat.
 
 ## 1. Decision
 
-Extract the **portable evaluator** now. Keep the **private operator instance**
-at `~/dev/nicos-flags`. Sanitize and extract **host plus console later**. Do
-not flip any existing flags tree public. Do not add a public git remote. Do
-not extract the `ndev flags` command. Do not rewrite the JavaScript toolchain
-in bun.
+Extract the **portable evaluator** and a **sanitized demo host**. Keep the
+**private operator instance** at `~/dev/nicos-flags`. Do not flip any
+existing flags tree public. Do not add a public git remote. Do not extract
+the `ndev flags` command. Do not rewrite the JavaScript toolchain in bun.
 
-This repository (`~/tools/nicos-flag-eval`) is the Phase 0 tree: Go +
-TypeScript + Swift evaluators, schema, frozen FNV-1a parity fixture, and a
-synthetic demo catalog. It is a **new** local git repository. It is not a
-branch or worktree of `nicos-tools` and not a visibility change of
-`~/dev/nicos-flags`.
+This repository (`~/tools/nicos-flag-eval`) holds the Go + TypeScript +
+Swift evaluators, the synthetic demo catalog, OpenFeature, experiments, and
+`host/`. It is a **new** local git repository. It is not a branch or
+worktree of `nicos-tools` and not a visibility change of `~/dev/nicos-flags`.
 
 ## 2. Catalog ownership
 
@@ -144,8 +142,8 @@ on purpose so this extract stays clean). In this tree the rule is:
 - Cloudflare Access team hostname or audience UUID.
 - The `ndev flags` CLI, personal/repo override paths, or the legacy
   gates wrap.
-- Production Wrangler, Pages Functions, cron Worker, stream Worker, or
-  Svelte `src/` as a runnable app (Phase 1 only, after sanitize).
+- Production Wrangler identity, factory catalog, or factory host names
+  in the sanitized `host/` tree.
 
 Parity fixture **seeds** such as `delivery-packet-v2` are hash inputs, not
 factory keys. Keep the nine frozen tuples. Do not rename them.
@@ -259,7 +257,6 @@ point the host at `schemas/demo.manifest.json`, keep pnpm/Wrangler/Node
 - Public GitHub create, visibility flip, or push.
 - Rewriting or deleting `~/dev/nicos-flags`.
 - Extracting `ndev flags`.
-- Implementing host/console in this tree.
 - Bun.
 - Career pin or profile edits.
 - Catalog enrollment as a public product.

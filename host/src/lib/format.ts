@@ -29,8 +29,6 @@ export function sourceColor(source: EvalSource): { bg: string; fg: string; ring:
     case "kill-date":
     case "missing":
       return { bg: "rgba(248, 113, 113, 0.14)", fg: "#fca5a5", ring: "#f87171" };
-    case "legacy-gate":
-      return { bg: "rgba(251, 146, 60, 0.14)", fg: "#fdba74", ring: "#fb923c" };
     default:
       return { bg: "rgba(255,255,255,0.08)", fg: "#e6e8ee", ring: "#666" };
   }

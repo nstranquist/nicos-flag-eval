@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const storiesRoot = join(root, "host/src/lib/stories");
+const storiesRoot = join(root, "host/src");
 const required = ["checkout.promo-banner", "search.ranking-variant"];
 
 function walk(dir) {

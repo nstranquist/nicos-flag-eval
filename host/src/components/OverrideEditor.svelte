@@ -13,8 +13,9 @@
     overrideMeta: { actor: string; reason: string | null; updated_at: string } | null;
     envName: string;
     onchange: () => void;
+    skipRemote?: boolean;
   }
-  let { flag, currentOverride, overrideMeta, envName, onchange }: Props = $props();
+  let { flag, currentOverride, overrideMeta, envName, onchange, skipRemote = false }: Props = $props();
 
   // Force-override state — Turso-backed per-(env, flag, user) pinning.
   // Separate from the manifest's static force_include/exclude blocks.
@@ -39,6 +40,7 @@
 
   $effect(() => {
     void flag.key; void envName;
+    if (skipRemote) return;
     loadForceLists();
   });
 

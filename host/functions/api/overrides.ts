@@ -11,7 +11,7 @@
 // (KEP-008) and wins over the dynamic [key] match per Pages routing.
 
 import type {} from "@cloudflare/workers-types";
-import { db, errorCode, json, actorFromRequest, type Env } from "../_lib/turso";
+import { db, errorCode, json, actorFromRequest, type Env } from "../_lib/turso.ts";
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const viewer = await actorFromRequest(request, env);

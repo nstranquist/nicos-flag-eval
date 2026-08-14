@@ -7,7 +7,7 @@
   const { Story } = defineMeta({
     title: "Flags/OverrideEditor",
     component: OverrideEditor,
-    args: { onchange: noop, currentOverride: undefined, overrideMeta: null, envName: "staging" },
+    args: { onchange: noop, currentOverride: undefined, overrideMeta: null, envName: "staging", skipRemote: true },
   });
 </script>
 

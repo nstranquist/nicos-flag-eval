@@ -6,7 +6,7 @@
   import ForceList from "./ForceList.svelte";
   import RuleCard, { type RuleSpec } from "./RuleCard.svelte";
   import { formatValue } from "../lib/format";
-  import type { FlagSpec } from "../lib/api";
+  import type { AuditEvent, EvalResult, FlagSpec } from "../lib/api";
 
   interface Props {
     flag: FlagSpec;
@@ -16,8 +16,14 @@
     refreshToken: number;
     onclose: () => void;
     onchange: () => void;
+    previewResult?: EvalResult | null;
+    previewEvents?: AuditEvent[];
+    skipRemote?: boolean;
   }
-  let { flag, currentOverride, overrideMeta, envName, refreshToken, onclose, onchange }: Props = $props();
+  let {
+    flag, currentOverride, overrideMeta, envName, refreshToken, onclose, onchange,
+    previewResult = null, previewEvents, skipRemote = false,
+  }: Props = $props();
 
   let tab: "manage" | "rules" | "raw" = $state("manage");
 </script>
@@ -57,11 +63,12 @@
         {overrideMeta}
         {envName}
         {onchange}
+        {skipRemote}
       />
 
-      <EvalPanel {flag} />
+      <EvalPanel {flag} {previewResult} />
 
-      <AuditTimeline flagKey={flag.key} {refreshToken} />
+      <AuditTimeline flagKey={flag.key} {refreshToken} events={previewEvents} />
 
       <section class="card">
         <h3>Manifest default</h3>

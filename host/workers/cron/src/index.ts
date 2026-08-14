@@ -25,12 +25,9 @@ export default {
     ctx.waitUntil(firePending(env));
   },
 
-  // Liveness probe. A scheduled-only Worker exports no `fetch`, so any HTTP GET
-  // to its *.workers.dev hostname returns Cloudflare error 1101 ("no fetch
-  // handler") as a 500 — which read as a degraded deploy in `ndev endpoints
-  // doctor` even though the cron was firing fine. This cheap handler makes the
-  // Worker observably alive (and reports what it does) without touching Turso or
-  // the Pages app, so the deployment ledger reflects reality.
+  // Liveness probe. A scheduled-only Worker with no fetch handler looks
+  // dead to HTTP health checks even when cron is firing. This handler
+  // reports that the sidecar is up without touching Turso or Pages.
   fetch(_req: Request, env: Env): Response {
     return Response.json({
       worker: "flag-eval-demo-cron",

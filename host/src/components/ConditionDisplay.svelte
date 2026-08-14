@@ -1,10 +1,6 @@
 <script lang="ts" module>
-  // Wire shape — the `if` field on a manifest rule. Real flags today
-  // ship one of two shapes:
-  //   { env: "iat" }                                // env equality
-  //   { attr: { is_internal: "true" } }             // attr equality (multi-key = implicit AND)
-  // Unknown top-level keys render as raw <key>: <json> chips so the
-  // schema can evolve without this component going blind.
+  // Wire shape for a rule predicate. Demo flags use env equality
+  // ({ env: "staging" }) or attr equality ({ attr: { plan: "vip" } }).
   export interface Condition {
     env?: string;
     attr?: Record<string, string>;

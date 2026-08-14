@@ -20,7 +20,7 @@
 // Unconfigured Access ⇒ no identity ⇒ privileged routes refuse. See access.ts.
 
 import { createClient, type Client } from "@libsql/client";
-import { verifiedAccessEmail } from "./access";
+import { verifiedAccessEmail } from "./access.ts";
 
 export type Env = {
   TURSO_URL?: string;
@@ -34,9 +34,11 @@ export type Env = {
   STREAM_PUBLISH_SECRET?: string;
   ENVIRONMENT?: string;
   EXPOSURE_SAMPLE_RATE?: string;
+  __testClient?: Client;
 };
 
 export function db(env: Env): Client | null {
+  if (env.__testClient) return env.__testClient;
   if (!env.TURSO_URL || !env.TURSO_AUTH_TOKEN) return null;
   return createClient({ url: env.TURSO_URL, authToken: env.TURSO_AUTH_TOKEN });
 }

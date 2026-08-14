@@ -6,14 +6,15 @@
 
   interface Props {
     flag: FlagSpec;
+    previewResult?: EvalResult | null;
   }
-  let { flag }: Props = $props();
+  let { flag, previewResult = null }: Props = $props();
 
   let userId = $state("");
   let env = $state("");
   let project = $state("");
   let attrs = $state("");
-  let result: EvalResult | null = $state(null);
+  let result: EvalResult | null = $state(previewResult);
   let evaluating = $state(false);
   let err = $state("");
 
@@ -70,7 +71,7 @@
     </label>
     <label>
       <span>env</span>
-      <input bind:value={env} placeholder="iat / staging / prod" autocomplete="off" />
+      <input bind:value={env} placeholder="staging / production" autocomplete="off" />
     </label>
     <label>
       <span>project</span>
@@ -78,7 +79,7 @@
     </label>
     <label class="wide">
       <span>attrs (k=v,k2=v2)</span>
-      <input bind:value={attrs} placeholder="is_internal=true" autocomplete="off" />
+      <input bind:value={attrs} placeholder="plan=vip" autocomplete="off" />
     </label>
   </div>
 

@@ -1,4 +1,4 @@
-import type { Env } from "./turso";
+import type { Env } from "./turso.ts";
 
 export type LiveStreamEvent = {
   id: number;

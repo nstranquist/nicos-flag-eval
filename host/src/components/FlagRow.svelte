@@ -34,7 +34,7 @@
     <span class="meta">
       <span class="key">
         <code>{flag.key}</code>
-        {#if flag._synthesized}<span class="legacy" title="synthesized from internal/feature/gates.go">legacy</span>{/if}
+        {#if flag._synthesized}<span class="legacy" title="synthesized demo flag">legacy</span>{/if}
         {#if hasOverride}<span class="override-dot" title="cloud override active"></span>{/if}
       </span>
       {#if flag.description}
