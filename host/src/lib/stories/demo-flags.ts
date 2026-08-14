@@ -66,6 +66,18 @@ export const rankingResult: EvalResult = {
   found: true,
 };
 
+export const promoEnvResults: Record<string, EvalResult> = {
+  default: promoOff,
+  staging: promoOn,
+  production: promoOff,
+};
+
+export const rankingEnvResults: Record<string, EvalResult> = {
+  default: rankingResult,
+  staging: rankingResult,
+  production: { ...rankingResult, value: "control", variant: "control", source: "default", reason: "no rule matched" },
+};
+
 export function demoAudit(key: string): AuditEvent[] {
   return [
     {

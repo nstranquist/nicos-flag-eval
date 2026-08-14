@@ -7,8 +7,9 @@
   interface Props {
     flag: FlagSpec;
     previewResult?: EvalResult | null;
+    skipRemote?: boolean;
   }
-  let { flag, previewResult = null }: Props = $props();
+  let { flag, previewResult = null, skipRemote = false }: Props = $props();
 
   let userId = $state("");
   let env = $state("");
@@ -49,9 +50,11 @@
   }
 
   // Auto-evaluate on mount + when context changes (debounced).
+  // Storybook passes skipRemote so the fixture in previewResult stays put.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
   $effect(() => {
     void flag.key; void userId; void env; void project; void attrs;
+    if (skipRemote) return;
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(run, 200);
     return () => { if (debounceTimer) clearTimeout(debounceTimer); };

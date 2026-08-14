@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.5] - 2026-08-14
+
+- Stop Storybook Eval and Detail stories from POSTing `/api/evaluate` on mount.
+- Pass `skipRemote` through `EvalPanel` and `EnvMatrix`.
+- Fail `check-stories` when those gates are missing.
+
 ## [0.1.4] - 2026-08-14
 
 - Accept force-list writes for `<flag>:<user>` keys.

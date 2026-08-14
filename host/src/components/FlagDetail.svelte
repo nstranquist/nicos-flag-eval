@@ -18,11 +18,12 @@
     onchange: () => void;
     previewResult?: EvalResult | null;
     previewEvents?: AuditEvent[];
+    previewEnvResults?: Record<string, EvalResult>;
     skipRemote?: boolean;
   }
   let {
     flag, currentOverride, overrideMeta, envName, refreshToken, onclose, onchange,
-    previewResult = null, previewEvents, skipRemote = false,
+    previewResult = null, previewEvents, previewEnvResults, skipRemote = false,
   }: Props = $props();
 
   let tab: "manage" | "rules" | "raw" = $state("manage");
@@ -66,7 +67,7 @@
         {skipRemote}
       />
 
-      <EvalPanel {flag} {previewResult} />
+      <EvalPanel {flag} {previewResult} {skipRemote} />
 
       <AuditTimeline flagKey={flag.key} {refreshToken} events={previewEvents} />
 
@@ -97,7 +98,7 @@
         </div>
       {/if}
 
-      <EnvMatrix flagKey={flag.key} />
+      <EnvMatrix flagKey={flag.key} {skipRemote} previewResults={previewEnvResults} />
     {:else if tab === "rules"}
       {#if !flag.rules?.length}
         <p class="empty">No rules — falls through to manifest default.</p>

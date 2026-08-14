@@ -15,11 +15,19 @@
     /** Optional user-id context applied to every eval (lets us preview
      *  per-user resolution across envs without re-typing). */
     userId?: string;
+    skipRemote?: boolean;
+    previewResults?: Record<string, EvalResult>;
   }
-  let { flagKey, envs = ["default", "staging", "production"], userId }: Props = $props();
+  let {
+    flagKey,
+    envs = ["default", "staging", "production"],
+    userId,
+    skipRemote = false,
+    previewResults,
+  }: Props = $props();
 
-  let results: Record<string, EvalResult | { error: string }> = $state({});
-  let loading = $state(true);
+  let results: Record<string, EvalResult | { error: string }> = $state(previewResults ?? {});
+  let loading = $state(!skipRemote);
   let refreshKey = $state(0);
 
   async function loadAll() {
@@ -40,6 +48,11 @@
 
   $effect(() => {
     void flagKey; void userId; void refreshKey;
+    if (skipRemote) {
+      results = previewResults ?? {};
+      loading = false;
+      return;
+    }
     loadAll();
   });
 
@@ -54,7 +67,9 @@
       <h3>Environment matrix</h3>
       <span class="sub">live resolution across {envs.length} envs · <code>{flagKey}</code></span>
     </div>
-    <button class="refresh" onclick={() => (refreshKey += 1)} aria-label="refresh">↻</button>
+    {#if !skipRemote}
+      <button class="refresh" onclick={() => (refreshKey += 1)} aria-label="refresh">↻</button>
+    {/if}
   </header>
 
   <div class="grid" class:loading style:--cols={envs.length}>

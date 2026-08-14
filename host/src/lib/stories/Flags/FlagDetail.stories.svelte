@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import FlagDetail from "../../../components/FlagDetail.svelte";
-  import { demoAudit, promoFlag, promoOn, rankingFlag } from "../demo-flags";
+  import { demoAudit, promoEnvResults, promoFlag, promoOn, rankingEnvResults, rankingFlag, rankingResult } from "../demo-flags";
 
   const noop = () => {};
   const { Story } = defineMeta({
@@ -21,5 +21,5 @@
   });
 </script>
 
-<Story name="Promo banner" args={{ flag: promoFlag }} />
-<Story name="Ranking variant" args={{ flag: rankingFlag }} />
+<Story name="Promo banner" args={{ flag: promoFlag, previewEnvResults: promoEnvResults }} />
+<Story name="Ranking variant" args={{ flag: rankingFlag, previewResult: rankingResult, previewEnvResults: rankingEnvResults }} />

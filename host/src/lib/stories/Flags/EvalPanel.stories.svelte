@@ -6,6 +6,7 @@
   const { Story } = defineMeta({
     title: "Flags/EvalPanel",
     component: EvalPanel,
+    args: { skipRemote: true },
   });
 </script>
 
