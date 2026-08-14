@@ -1,0 +1,12 @@
+{
+  "name": "@flag-eval/openfeature",
+  "private": true,
+  "type": "module",
+  "version": "0.1.2",
+  "scripts": {
+    "test": "node --test --experimental-strip-types provider.test.ts remote.test.ts conformance.test.ts"
+  },
+  "dependencies": {
+    "@openfeature/server-sdk": "1.23.0"
+  }
+}

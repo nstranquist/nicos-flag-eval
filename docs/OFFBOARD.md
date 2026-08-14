@@ -119,7 +119,9 @@ quarter.
 | Store / overrides / sticky files / `~/.nicos-dev` | `store.go`, `overrides.go`, `sticky.go` | **Omitted.** Not the public API |
 | Embedded factory `runtime.json` | `embedded.go` | **Omitted** |
 | `ndev flags` CLI | `nicos-dev/cmd/ndev-go/flags.go` | **Omitted. Do not extract.** |
-| Host, console, cron, stream, production Wrangler | `~/dev/nicos-flags` | **Phase 1.** See `PHASE-1-HOST.md` |
+| Host, console, cron, stream, production Wrangler | `~/dev/nicos-flags` | **Phase 1 started.** Sanitized tree in `host/`. |
+| OpenFeature provider | `packages/openfeature` in the private host | Ported to `packages/openfeature` on the demo catalog |
+| Experiment assignment/stats | `packages/experiments` | Ported, provider-neutral, no factory keys |
 
 The design document already deferred “future npm publication.” This repo is
 that publication shape, still local.

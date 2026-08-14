@@ -1,7 +1,7 @@
 // Typed client for the flag-eval-demo Pages Functions.
 
 export type FlagType = "boolean" | "string" | "number" | "json";
-export type Scope = "cross-project" | "cross-project";
+export type Scope = "cross-project";
 export type EvalSource =
   | "process-flag" | "env" | "personal-override" | "repo-override"
   | "cloud-override" | "sticky-bucket" | "force-include" | "force-exclude"

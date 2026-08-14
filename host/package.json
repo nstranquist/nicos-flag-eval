@@ -11,6 +11,24 @@
     "dev": "echo start vite and wrangler separately if concurrently is not installed",
     "build": "pnpm prepare:runtime && vite build",
     "typecheck:functions": "tsc -p functions/tsconfig.json --noEmit",
-    "test:host": "node --test --experimental-strip-types functions/_lib/host.test.ts scripts/evaluate-demo.test.mjs"
-  }
+    "test:host": "node --test --experimental-strip-types functions/_lib/host.test.ts scripts/evaluate-demo.test.mjs",
+    "story": "storybook dev -p 6009 --no-open",
+    "story:build": "storybook build -o storybook-static"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.15"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260804.1",
+    "@storybook/addon-docs": "^10.5.6",
+    "@storybook/addon-svelte-csf": "^5.1.2",
+    "@storybook/svelte": "^10.5.6",
+    "@storybook/svelte-vite": "^10.5.6",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "storybook": "^10.5.6",
+    "svelte": "^5.46.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.3.5"
+  },
+  "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065"
 }

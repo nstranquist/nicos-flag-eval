@@ -65,6 +65,12 @@ node --experimental-strip-types examples/eval-demo.mjs
 | `docs/OFFBOARD.md` | Full decision + implementable spec |
 | `docs/PHASE-1-HOST.md` | Later host/console sanitize |
 
+## OpenFeature and experiments
+
+`packages/openfeature` is a server provider over this evaluator. Pass
+`schemas/demo.manifest.json`. `packages/experiments` is assignment/stats
+only.
+
 ## Demo host (Phase 1)
 
 Sanitized Pages + Svelte console lives in `host/`. It evaluates

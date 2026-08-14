@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3] - 2026-08-14
+
+- Demo Storybook stories for checkout/search flags.
+- OpenFeature provider and remote source on the synthetic catalog.
+- Provider-neutral experiments package.
+- Host Functions typecheck when TypeScript is installed.
+
 ## [0.1.2] - 2026-08-14
 
 - Pop the prereq visiting stack so sibling and diamond rules evaluate.

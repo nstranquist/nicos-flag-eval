@@ -12,3 +12,5 @@
 /swift-contract
 /host/node_modules/
 /host/dist/
+/host/storybook-static/
+/packages/openfeature/node_modules/

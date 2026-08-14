@@ -1,8 +1,8 @@
 # Phase 1 — sanitize and extract host + console
 
-Status: first local extract is under `host/` (sanitized console, Functions,
-demo runtime, workers, SQL). Still no public remote. Storybook was not
-copied. Approvals/stream/Turso writes remain optional and unhosted.  
+Status: host extract plus demo Storybook, OpenFeature, and experiments
+packages. Still no public remote. Approvals/stream/Turso writes remain
+optional and unhosted.  
 Owner of the source tree: `~/dev/nicos-flags` (private operator instance).  
 Destination: a **new** directory. Never overwrite the operator instance.
 Never add a public remote without a human.
