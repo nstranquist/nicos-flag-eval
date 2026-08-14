@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Scope classifies a flag's audience. The portable extract only authors
-// project-scoped flags. Factory-only scopes stay out of this tree.
+// Scope classifies a flag's audience. This extract only authors
+// ScopeCrossProject. Factory-only scopes stay out of this tree.
 type Scope string
 
 const (
@@ -38,18 +38,17 @@ type Flag struct {
 	KillValue   json.RawMessage `json:"killValue,omitempty"`
 	Rules       []Rule          `json:"rules,omitempty"`
 
-	// ForceInclude maps a user id to a variation that wins over rule eval.
+	// ForceInclude / ForceExclude are host wire leftovers. The evaluator
+	// ignores them; a host may apply them before calling Evaluate.
 	ForceInclude map[string]json.RawMessage `json:"force_include,omitempty"`
-
-	// ForceExclude forces the flag back to its manifest Default.
-	ForceExclude []string `json:"force_exclude,omitempty"`
+	ForceExclude []string                   `json:"force_exclude,omitempty"`
 
 	// HashVersion is folded into the FNV-1a bucket seed so bumping it
 	// reshuffles assignments.
 	HashVersion int `json:"hashVersion,omitempty"`
 
-	// StickyBucketing is a schema hint for hosts. The evaluator is pure
-	// and does not persist assignments.
+	// StickyBucketing is a host hint. The evaluator does not persist
+	// assignments and does not read this field.
 	StickyBucketing bool `json:"stickyBucketing,omitempty"`
 
 	// Namespace pins the flag to a named bucket space.
@@ -154,6 +153,8 @@ type Context struct {
 type Source string
 
 const (
+	// Override and force-list sources are host wire leftovers. The
+	// evaluator itself only emits rule, kill-date, default, and missing.
 	SourceProcessFlag      Source = "process-flag"
 	SourceEnv              Source = "env"
 	SourcePersonalOverride Source = "personal-override"

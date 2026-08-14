@@ -1,9 +1,10 @@
 SHELL := /bin/bash
 ROOT := $(abspath .)
+VERIFY_REQUIRE_SWIFT ?= 1
 
-.PHONY: test test-go test-ts parity demo verify fmt
+.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift
 
-test: test-go test-ts
+test: test-go test-ts test-swift
 
 test-go:
 	go test ./...
@@ -11,24 +12,36 @@ test-go:
 test-ts:
 	node --test --experimental-strip-types ts/evaluator.test.ts
 
-parity:
+require-swift:
+	@if ! command -v swiftc >/dev/null 2>&1; then \
+		if [ "$(VERIFY_REQUIRE_SWIFT)" = "1" ]; then \
+			echo "swiftc is required for three-language verify; set VERIFY_REQUIRE_SWIFT=0 to skip"; \
+			exit 1; \
+		fi; \
+		echo "swiftc not available; Swift checks skipped"; \
+		exit 0; \
+	fi
+
+test-swift: require-swift
+	@if command -v swiftc >/dev/null 2>&1; then \
+		swiftc -parse-as-library swift/Evaluator.swift examples/Contract.swift -o $(ROOT)/swift-contract && \
+		$(ROOT)/swift-contract $(ROOT); \
+	fi
+
+parity: require-swift
 	go run ./cmd/parity
 	node --experimental-strip-types examples/parity.mjs
 	@if command -v swiftc >/dev/null 2>&1; then \
 		swiftc -parse-as-library swift/Evaluator.swift examples/Parity.swift -o $(ROOT)/swift-parity && \
 		$(ROOT)/swift-parity $(ROOT); \
-	else \
-		echo "swiftc not available; skipped Swift parity"; \
 	fi
 
-demo:
+demo: require-swift
 	go run ./cmd/eval-demo
 	node --experimental-strip-types examples/eval-demo.mjs
 	@if command -v swiftc >/dev/null 2>&1; then \
 		swiftc -parse-as-library swift/Evaluator.swift examples/EvalDemo.swift -o $(ROOT)/swift-eval-demo && \
 		$(ROOT)/swift-eval-demo $(ROOT); \
-	else \
-		echo "swiftc not available; skipped Swift demo"; \
 	fi
 
 fmt:

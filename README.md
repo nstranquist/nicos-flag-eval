@@ -26,8 +26,9 @@ remains `~/dev/nicos-flags`. The system remains `ndev.flags`. Read
 
 ## Quick start
 
-Need Go 1.22+, Node 22+ (for `--experimental-strip-types`), and on macOS
-a Swift toolchain for the Swift consumer.
+Need Go 1.22+, Node 22+ (for `--experimental-strip-types`), and a Swift
+toolchain. `make verify` fails if `swiftc` is missing; set
+`VERIFY_REQUIRE_SWIFT=0` only when you intentionally skip Swift.
 
 ```sh
 make verify

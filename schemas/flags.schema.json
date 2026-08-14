@@ -10,6 +10,10 @@
     "flags": {
       "type": "array",
       "items": { "$ref": "#/definitions/Flag" }
+    },
+    "segments": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Segment" }
     }
   },
   "definitions": {
@@ -84,7 +88,18 @@
         "variants": {
           "type": "array",
           "items": { "$ref": "#/definitions/Variant" }
-        }
+        },
+        "segment": { "type": "string" }
+      }
+    },
+    "Segment": {
+      "type": "object",
+      "required": ["key", "predicate"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "description": { "type": "string" },
+        "predicate": { "$ref": "#/definitions/Predicate" }
       }
     },
     "Variant": {

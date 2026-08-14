@@ -110,8 +110,9 @@ quarter.
 | Layer | Source | This repo |
 |---|---|---|
 | Pure evaluator (rules, predicates, rollouts, kill dates, variants, FNV-1a `Bucket`) | `nicos-tools/nicos-dev/internal/flags/engine.go` + `types.go` + `schema.go` | Copied, package `flageval` |
+| Manifest load (segment inline, unknown-segment reject, variant weights, namespace range + overlap) | Factory `registry.go` `NewRegistryFromManifest` | Ported into `ParseManifest` / TS `prepareManifest` / Swift `prepareManifest` |
 | TS runtime | `nicos-tools/apps/_shared/flag-schemas/runtime/evaluator.ts` | `ts/evaluator.ts` (no stream subscribe helper) |
-| Swift runtime | `nicos-tools/apps/_shared/flag-schemas/runtime/Evaluator.swift` | `swift/Evaluator.swift` |
+| Swift runtime | `nicos-tools/apps/_shared/flag-schemas/runtime/Evaluator.swift` | `swift/Evaluator.swift` (includes `hashVersion` / namespace, which the factory Swift port omitted) |
 | Schema + parity fixture | `apps/_shared/flag-schemas/{flags.schema.json,parity-fixture.json}` | `schemas/` (factory scopes stripped from schema) |
 | Authored factory manifest | `apps/_shared/flag-schemas/flags.manifest.json` | **Omitted.** Replaced by `schemas/demo.manifest.json` |
 | Built-in-gates wrap | `legacy_gates.go`, `internal/feature` | **Omitted.** Will not build as a public module |

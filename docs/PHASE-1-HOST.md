@@ -43,8 +43,9 @@ succeed on a staging directory:
 |---|---|
 | `src/` Svelte console | Strip factory key examples, operator emails, Access copy |
 | `functions/` Pages API | Strip Access team/AUD, inbox vars, factory manifest embed |
-| `worker-cron/` | Strip service-token comments that name factory hosts |
-| `worker-stream/` | Strip publish-secret docs that name production URLs |
+| `functions/_lib/host.ts` | Rewrite canonical-host allowlist; no factory `pages.dev` hostname |
+| `worker-cron/` wrangler + source | Strip service-token comments and production `PAGES_ENDPOINT` |
+| `worker-stream/` wrangler + source | Strip publish-secret docs that name production URLs |
 | `sql/` migrations | Schema only. No data dumps |
 | `packages/openfeature/` | Point at this repo’s evaluator + demo manifest |
 | `package.json` scripts that are host-local | Keep `dev` / `build`; drop `ship` until a demo account exists |
@@ -56,8 +57,12 @@ succeed on a staging directory:
 |---|---|
 | `packages/runtime/flags.manifest.json` | Factory catalog |
 | `packages/runtime/compatibility/` | Built-in-gates dump |
+| `packages/runtime/generated/` | Generated factory bindings (`flags.ts`, Swift bindings, runtime JSON) |
 | `functions/_runtime/flags.runtime.json` | Generated factory runtime |
-| Production `wrangler.toml` `[vars]` identity | Inboxes, Access hostname, audience |
+| `catalog.yaml`, `.nicos/product.yaml` | Proprietary product metadata |
+| `packages/experiments/` | Experiment warehouse until it sits on the synthetic catalog |
+| `docs/deployment-security.md` | Names the private host and Access policy |
+| Production `wrangler.toml` `[vars]` identity | Inboxes, Access hostname, audience UUID |
 | `.dev.vars`, dashboard secret names with real values | Secrets |
 | `docs/evidence/*` that cite private release URLs as public proof | Operator receipts |
 | LICENSE that says proprietary | Host extract should MIT-match this repo or stay unpublished |
@@ -79,7 +84,10 @@ succeed on a staging directory:
    - Keep the immutable-deployment host guard idea; allow only
      `localhost` and a documented demo hostname.
 4. Grep the staging tree for the tokens listed in
-   `~/dev/nicos-flags/docs/flag-eval-extract.md`. Zero matches required.
+   `~/dev/nicos-flags/docs/flag-eval-extract.md`. That list includes
+   operator inboxes, the Access team hostname, the Access audience UUID,
+   the factory `pages.dev` hostname, and `PAGES_ENDPOINT`. Zero matches
+   required.
 5. Point TypeScript imports at `../../ts/evaluator.ts` (this repo) or a
    built package of `flageval`. Do not vendor a second evaluator.
 6. Drop `subscribe()` wiring that assumes the factory stream Worker URL.

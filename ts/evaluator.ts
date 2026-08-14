@@ -52,6 +52,13 @@ export interface Rule {
   rollout?: Rollout;
   value?: FlagValue;
   variants?: Variant[];
+  segment?: string;
+}
+
+export interface SegmentSpec {
+  key: string;
+  description?: string;
+  predicate: Predicate;
 }
 
 export interface Variant {
@@ -85,6 +92,7 @@ export interface FlagSpec {
 export interface FlagsManifest {
   schemaVersion: number;
   flags: FlagSpec[];
+  segments?: SegmentSpec[];
 }
 
 export interface EvalContext {
@@ -127,20 +135,65 @@ export interface ExposureEvent {
   ts: string;
 }
 
+export function prepareManifest(manifest: FlagsManifest): FlagsManifest {
+  const segments = new Map<string, Predicate>();
+  for (const seg of manifest.segments ?? []) {
+    if (!seg.key) throw new Error("flageval: segment missing key");
+    if (segments.has(seg.key)) throw new Error(`flageval: duplicate segment key ${seg.key}`);
+    segments.set(seg.key, seg.predicate);
+  }
+  const flags = manifest.flags.map((f) => {
+    const rules = (f.rules ?? []).map((r, i) => {
+      if (!r.segment) return { ...r };
+      const pred = segments.get(r.segment);
+      if (!pred) {
+        throw new Error(`flageval: flag ${f.key} rule[${i}] references unknown segment ${r.segment}`);
+      }
+      const next: Rule = { ...r, segment: undefined };
+      next.if = r.if ? { all: [r.if, pred] } : { ...pred };
+      return next;
+    });
+    return { ...f, rules };
+  });
+  const byNS = new Map<string, Array<{ key: string; lo: number; hi: number }>>();
+  for (const f of flags) {
+    if (!f.namespace) continue;
+    const range = f.namespaceRange ?? [0, 0];
+    const [lo, hi] = range;
+    if (lo < 0 || hi > 1 || lo >= hi) {
+      throw new Error(`flageval: flag ${f.key} namespaceRange invalid`);
+    }
+    const list = byNS.get(f.namespace) ?? [];
+    list.push({ key: f.key, lo, hi });
+    byNS.set(f.namespace, list);
+  }
+  for (const [ns, spans] of byNS) {
+    for (let i = 0; i < spans.length; i++) {
+      for (let j = i + 1; j < spans.length; j++) {
+        if (spans[i].lo < spans[j].hi && spans[j].lo < spans[i].hi) {
+          throw new Error(`flageval: namespace ${ns}: ${spans[i].key} overlaps ${spans[j].key}`);
+        }
+      }
+    }
+  }
+  return { schemaVersion: manifest.schemaVersion, flags };
+}
+
 export class Evaluator {
   private byKey: Map<string, FlagSpec>;
 
   onExposure?: (event: ExposureEvent) => void;
 
   constructor(manifest: FlagsManifest) {
+    const prepared = prepareManifest(manifest);
     this.byKey = new Map();
-    for (const f of manifest.flags) {
+    for (const f of prepared.flags) {
       this.byKey.set(f.key, f);
     }
   }
 
   evaluate(key: string, ctx: EvalContext = {}): EvalResult {
-    const res = this.evaluateInner(key, ctx);
+    const res = this.evaluateInner(key, ctx, new Set());
     if (this.onExposure && res.found) {
       this.onExposure({
         key: res.key,
@@ -156,11 +209,15 @@ export class Evaluator {
     return res;
   }
 
-  private evaluateInner(key: string, ctx: EvalContext): EvalResult {
+  private evaluateInner(key: string, ctx: EvalContext, visiting: Set<string>): EvalResult {
+    if (visiting.has(key)) {
+      return { key, value: null, source: "missing", reason: "cyclic prerequisite", found: false };
+    }
     const f = this.byKey.get(key);
     if (!f) {
       return { key, value: null, source: "missing", reason: "flag not registered", found: false };
     }
+    visiting.add(key);
     if (ctx.processOverrides && key in ctx.processOverrides) {
       return {
         key, value: ctx.processOverrides[key], source: "process-flag",
@@ -176,7 +233,7 @@ export class Evaluator {
     if (f.rules) {
       for (let i = 0; i < f.rules.length; i++) {
         const r = f.rules[i];
-        if (!this.ruleMatches(f, r, ctx)) continue;
+        if (!this.ruleMatches(f, r, ctx, visiting)) continue;
         let v: FlagValue = r.value !== undefined ? r.value : f.default;
         let variantKey: string | undefined;
         if (r.variants && r.variants.length > 0) {
@@ -197,10 +254,10 @@ export class Evaluator {
     return { key, value: f.default, source: "default", reason: "no rule matched", found: true };
   }
 
-  private ruleMatches(f: FlagSpec, r: Rule, ctx: EvalContext): boolean {
+  private ruleMatches(f: FlagSpec, r: Rule, ctx: EvalContext, visiting: Set<string>): boolean {
     if (r.if && !predicateMatches(r.if, ctx)) return false;
     if (r.prereq) {
-      const got = this.evaluateInner(r.prereq.key, ctx);
+      const got = this.evaluateInner(r.prereq.key, ctx, visiting);
       if (!got.found || !deepEqual(got.value, r.prereq.equals)) return false;
     }
     if (r.rollout && !rolloutHits(r.rollout, f.hashVersion ?? 0, ctx)) return false;

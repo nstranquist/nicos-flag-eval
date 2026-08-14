@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "segments": [
+    {
+      "key": "vip-users",
+      "predicate": { "attr": { "plan": "vip" } }
+    }
+  ],
+  "flags": [
+    {
+      "key": "checkout.vip-banner",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "rules": [
+        { "segment": "vip-users", "value": true }
+      ]
+    },
+    {
+      "key": "cycle.alpha",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "rules": [
+        { "prereq": { "key": "cycle.beta", "equals": true }, "value": true }
+      ]
+    },
+    {
+      "key": "cycle.beta",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "rules": [
+        { "prereq": { "key": "cycle.alpha", "equals": true }, "value": true }
+      ]
+    },
+    {
+      "key": "search.reshuffle",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "hashVersion": 1,
+      "rules": [
+        {
+          "rollout": { "seed": "search.reshuffle", "percentage": 50, "by": "user_id" },
+          "value": true
+        }
+      ]
+    },
+    {
+      "key": "exp.left",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "namespace": "search-ab",
+      "namespaceRange": [0, 0.5],
+      "rules": [{ "value": true }]
+    },
+    {
+      "key": "exp.right",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "namespace": "search-ab",
+      "namespaceRange": [0.5, 1],
+      "rules": [{ "value": true }]
+    }
+  ]
+}

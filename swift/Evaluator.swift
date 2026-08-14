@@ -71,6 +71,10 @@ public struct Predicate: Codable, Sendable {
     public var any: [Predicate]?
     public var not: Box?
 
+    public init(all: [Predicate]) {
+        self.all = all
+    }
+
     public final class Box: Codable, Sendable {
         public let p: Predicate
         public init(_ p: Predicate) { self.p = p }
@@ -103,6 +107,7 @@ public struct Rule: Codable, Sendable {
     public var rollout: Rollout?
     public var value: FlagValue?
     public var variants: [Variant]?
+    public var segment: String?
 
     enum CodingKeys: String, CodingKey {
         case description
@@ -111,7 +116,14 @@ public struct Rule: Codable, Sendable {
         case rollout
         case value
         case variants
+        case segment
     }
+}
+
+public struct SegmentSpec: Codable, Sendable {
+    public let key: String
+    public var description: String?
+    public var predicate: Predicate
 }
 
 public struct Variant: Codable, Sendable {
@@ -133,11 +145,15 @@ public struct FlagSpec: Codable, Sendable {
     public var killDate: String?
     public var killValue: FlagValue?
     public var rules: [Rule]?
+    public var hashVersion: Int?
+    public var namespace: String?
+    public var namespaceRange: [Double]?
 }
 
 public struct FlagsManifest: Codable, Sendable {
     public let schemaVersion: Int
     public let flags: [FlagSpec]
+    public var segments: [SegmentSpec]?
 }
 
 public struct EvalContext: Sendable {
@@ -181,17 +197,28 @@ public struct EvalResult: Sendable {
 public final class Evaluator: @unchecked Sendable {
     private let byKey: [String: FlagSpec]
 
-    public init(manifest: FlagsManifest) {
+    public init(manifest: FlagsManifest) throws {
+        let prepared = try prepareManifest(manifest)
         var m: [String: FlagSpec] = [:]
-        for f in manifest.flags { m[f.key] = f }
+        for f in prepared.flags { m[f.key] = f }
         self.byKey = m
     }
 
     public func evaluate(_ key: String, _ ctx: EvalContext = EvalContext()) -> EvalResult {
+        return evaluate(key, ctx, visiting: [])
+    }
+
+    private func evaluate(_ key: String, _ ctx: EvalContext, visiting: Set<String>) -> EvalResult {
+        if visiting.contains(key) {
+            return EvalResult(key: key, value: .null, source: .missing,
+                              reason: "cyclic prerequisite", rule: nil, variant: nil, found: false)
+        }
         guard let f = byKey[key] else {
             return EvalResult(key: key, value: .null, source: .missing,
                               reason: "flag not registered", rule: nil, variant: nil, found: false)
         }
+        var nextVisit = visiting
+        nextVisit.insert(key)
         if let po = ctx.processOverrides, let v = po[key] {
             return EvalResult(key: key, value: v, source: .processFlag,
                               reason: "in-memory process override", rule: nil, variant: nil, found: true)
@@ -202,11 +229,11 @@ public final class Evaluator: @unchecked Sendable {
         }
         if let rules = f.rules {
             for (i, r) in rules.enumerated() {
-                if !ruleMatches(r, ctx) { continue }
+                if !ruleMatches(f, r, ctx, visiting: nextVisit) { continue }
                 var v: FlagValue = r.value ?? f.default
                 var variantKey: String? = nil
                 if let vs = r.variants, !vs.isEmpty {
-                    let picked = Evaluator.pickVariant(flagKey: key, ruleIdx: i, rule: r, ctx: ctx)
+                    let picked = Evaluator.pickVariant(flagKey: key, hashVersion: f.hashVersion ?? 0, ruleIdx: i, rule: r, ctx: ctx)
                     variantKey = picked.key
                     v = picked.value ?? f.default
                 }
@@ -226,9 +253,9 @@ public final class Evaluator: @unchecked Sendable {
                           variant: nil, found: true)
     }
 
-    static func pickVariant(flagKey: String, ruleIdx: Int, rule r: Rule, ctx: EvalContext) -> (key: String, value: FlagValue?) {
+    static func pickVariant(flagKey: String, hashVersion: Int, ruleIdx: Int, rule r: Rule, ctx: EvalContext) -> (key: String, value: FlagValue?) {
         let variants = r.variants ?? []
-        let seed: String
+        var seed: String
         let attr: String
         if let ro = r.rollout, !ro.seed.isEmpty {
             seed = ro.seed
@@ -237,25 +264,73 @@ public final class Evaluator: @unchecked Sendable {
             seed = "\(flagKey)|rule-\(ruleIdx)"
             attr = ctx.userId ?? ctx.project ?? ctx.env ?? ""
         }
+        if hashVersion > 0 { seed = seed + "|v\(hashVersion)" }
         let b = Int(bucket(seed: seed, attr: attr))
         var cumulative = 0
         for v in variants {
             cumulative += v.weight
             if b < cumulative { return (v.key, v.value) }
         }
-        let last = variants.last!
+        guard let last = variants.last else { return ("", nil) }
         return (last.key, last.value)
     }
 
-    private func ruleMatches(_ r: Rule, _ ctx: EvalContext) -> Bool {
+    private func ruleMatches(_ f: FlagSpec, _ r: Rule, _ ctx: EvalContext, visiting: Set<String>) -> Bool {
         if let p = r.ifPred, !predicateMatches(p, ctx) { return false }
         if let pr = r.prereq {
-            let got = evaluate(pr.key, ctx)
+            let got = evaluate(pr.key, ctx, visiting: visiting)
             if !got.found || got.value != pr.equals { return false }
         }
-        if let ro = r.rollout, !rolloutHits(ro, ctx) { return false }
+        if let ro = r.rollout, !rolloutHits(ro, f.hashVersion ?? 0, ctx) { return false }
+        if f.namespace != nil && !(f.namespace ?? "").isEmpty && !namespaceHits(f, ctx) { return false }
         return true
     }
+}
+
+public enum FlagEvalError: Error {
+    case unknownSegment(String)
+    case duplicateSegment(String)
+}
+
+public func prepareManifest(_ manifest: FlagsManifest) throws -> FlagsManifest {
+    var segments: [String: Predicate] = [:]
+    for seg in manifest.segments ?? [] {
+        if segments[seg.key] != nil {
+            throw FlagEvalError.duplicateSegment(seg.key)
+        }
+        segments[seg.key] = seg.predicate
+    }
+    var flags: [FlagSpec] = []
+    for var f in manifest.flags {
+        if let rules = f.rules {
+            var next: [Rule] = []
+            for var r in rules {
+                if let name = r.segment, !name.isEmpty {
+                    guard let pred = segments[name] else {
+                        throw FlagEvalError.unknownSegment(name)
+                    }
+                    if let existing = r.ifPred {
+                        r.ifPred = Predicate(all: [existing, pred])
+                    } else {
+                        r.ifPred = pred
+                    }
+                    r.segment = nil
+                }
+                next.append(r)
+            }
+            f.rules = next
+        }
+        flags.append(f)
+    }
+    return FlagsManifest(schemaVersion: manifest.schemaVersion, flags: flags, segments: nil)
+}
+
+public func namespaceHits(_ f: FlagSpec, _ ctx: EvalContext) -> Bool {
+    guard let user = ctx.userId, !user.isEmpty else { return false }
+    let range = f.namespaceRange ?? [0, 1]
+    guard range.count == 2 else { return false }
+    let b = Double(bucket(seed: "ns:" + (f.namespace ?? ""), attr: user)) / 100.0
+    return b >= range[0] && b < range[1]
 }
 
 public func predicateMatches(_ p: Predicate, _ ctx: EvalContext) -> Bool {
@@ -277,12 +352,14 @@ public func predicateMatches(_ p: Predicate, _ ctx: EvalContext) -> Bool {
     return true
 }
 
-public func rolloutHits(_ r: Rollout, _ ctx: EvalContext) -> Bool {
+public func rolloutHits(_ r: Rollout, _ hashVersion: Int, _ ctx: EvalContext) -> Bool {
     if r.percentage <= 0 { return false }
     if r.percentage >= 100 { return true }
     let attr = rolloutAttr(r.by, ctx)
     if attr.isEmpty { return false }
-    return Int(bucket(seed: r.seed, attr: attr)) < r.percentage
+    var seed = r.seed
+    if hashVersion > 0 { seed = seed + "|v\(hashVersion)" }
+    return Int(bucket(seed: seed, attr: attr)) < r.percentage
 }
 
 func rolloutAttr(_ by: String, _ ctx: EvalContext) -> String {
