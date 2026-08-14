@@ -1,0 +1,16 @@
+{
+  "name": "flag-eval-demo-host",
+  "private": true,
+  "version": "0.1.1",
+  "type": "module",
+  "description": "Sanitized demo host and console for nicos-flag-eval. Local only.",
+  "scripts": {
+    "prepare:runtime": "node scripts/prepare-runtime.mjs",
+    "dev:vite": "vite",
+    "dev:wrangler": "wrangler pages dev --proxy 5173 --port 8788",
+    "dev": "echo start vite and wrangler separately if concurrently is not installed",
+    "build": "pnpm prepare:runtime && vite build",
+    "typecheck:functions": "tsc -p functions/tsconfig.json --noEmit",
+    "test:host": "node --test --experimental-strip-types functions/_lib/host.test.ts scripts/evaluate-demo.test.mjs"
+  }
+}

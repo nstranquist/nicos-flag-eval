@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2] - 2026-08-14
+
+- Pop the prereq visiting stack so sibling and diamond rules evaluate.
+- Validate variant weights and namespace overlap in TypeScript and Swift.
+- Land a sanitized demo host under `host/` (console, Functions, workers, SQL).
+- Keep Storybook, factory catalog, and production identity out of the extract.
+
 ## [0.1.1] - 2026-08-14
 
 - Inline named segments at manifest load; reject unknown segment refs.

@@ -1,6 +1,8 @@
 # Phase 1 — sanitize and extract host + console
 
-Status: specified, not implemented.  
+Status: first local extract is under `host/` (sanitized console, Functions,
+demo runtime, workers, SQL). Still no public remote. Storybook was not
+copied. Approvals/stream/Turso writes remain optional and unhosted.  
 Owner of the source tree: `~/dev/nicos-flags` (private operator instance).  
 Destination: a **new** directory. Never overwrite the operator instance.
 Never add a public remote without a human.
@@ -44,7 +46,7 @@ succeed on a staging directory:
 | `src/` Svelte console | Strip factory key examples, operator emails, Access copy |
 | `functions/` Pages API | Strip Access team/AUD, inbox vars, factory manifest embed |
 | `functions/_lib/host.ts` | Rewrite canonical-host allowlist; no factory `pages.dev` hostname |
-| `worker-cron/` wrangler + source | Strip service-token comments and production `PAGES_ENDPOINT` |
+| `worker-cron/` wrangler + source | Strip service-token comments and the production Pages URL env var |
 | `worker-stream/` wrangler + source | Strip publish-secret docs that name production URLs |
 | `sql/` migrations | Schema only. No data dumps |
 | `packages/openfeature/` | Point at this repo’s evaluator + demo manifest |
@@ -84,10 +86,11 @@ succeed on a staging directory:
    - Keep the immutable-deployment host guard idea; allow only
      `localhost` and a documented demo hostname.
 4. Grep the staging tree for the tokens listed in
-   `~/dev/nicos-flags/docs/flag-eval-extract.md`. That list includes
-   operator inboxes, the Access team hostname, the Access audience UUID,
-   the factory `pages.dev` hostname, and `PAGES_ENDPOINT`. Zero matches
-   required.
+   `~/dev/nicos-flags/docs/flag-eval-extract.md`. That private list
+   includes operator inboxes, the Access team hostname, the Access
+   audience UUID, the factory Pages hostname, and the cron Pages URL
+   env var. Zero matches required. Do not copy those tokens into this
+   extract.
 5. Point TypeScript imports at `../../ts/evaluator.ts` (this repo) or a
    built package of `flageval`. Do not vendor a second evaluator.
 6. Drop `subscribe()` wiring that assumes the factory stream Worker URL.

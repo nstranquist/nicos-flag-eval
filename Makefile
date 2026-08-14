@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT := $(abspath .)
 VERIFY_REQUIRE_SWIFT ?= 1
 
-.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift
+.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift host-check
 
 test: test-go test-ts test-swift
 
@@ -47,5 +47,8 @@ demo: require-swift
 fmt:
 	gofmt -w *.go cmd/eval-demo/main.go cmd/parity/main.go
 
-verify: fmt test parity demo
+host-check:
+	node --test --experimental-strip-types host/functions/_lib/host.test.ts host/scripts/evaluate-demo.test.mjs
+
+verify: fmt test parity demo host-check
 	@echo "verify ok"

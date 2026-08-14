@@ -277,6 +277,7 @@ func (m Manifest) evaluate(key string, ctx Context, visiting map[string]struct{}
 		}
 	}
 	visiting[key] = struct{}{}
+	defer delete(visiting, key)
 	e := &Evaluator{
 		PrereqResolver: func(k string, c Context) (EvalResult, bool) {
 			r := m.evaluate(k, c, visiting)

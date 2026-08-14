@@ -48,6 +48,22 @@
       ]
     },
     {
+      "key": "path.gate",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project"
+    },
+    {
+      "key": "path.flag",
+      "type": "string",
+      "default": "none",
+      "scope": "cross-project",
+      "rules": [
+        { "prereq": { "key": "path.gate", "equals": true }, "value": "on" },
+        { "prereq": { "key": "path.gate", "equals": false }, "value": "off" }
+      ]
+    },
+    {
       "key": "exp.left",
       "type": "boolean",
       "default": false,

@@ -24,6 +24,12 @@ struct ContractMain {
             exit(1)
         }
 
+        let path = ev.evaluate("path.flag", EvalContext())
+        guard path.source == .rule, path.value.debugText == "off" else {
+            fputs("sibling prereq should hit off: \(path.source.rawValue) \(path.value.debugText)\n", stderr)
+            exit(1)
+        }
+
         let cycle = ev.evaluate("cycle.alpha", EvalContext(userId: "user-alice"))
         guard cycle.source == .default, cycle.value.debugText == "false" else {
             fputs("cycle should fail closed: \(cycle.source.rawValue)\n", stderr)

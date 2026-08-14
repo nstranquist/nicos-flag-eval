@@ -1,0 +1,9 @@
+name = "flag-eval-demo-cron"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+[vars]
+DEMO_HOST_ORIGIN = "http://127.0.0.1:8788"
+
+[triggers]
+crons = ["* * * * *"]

@@ -119,6 +119,14 @@ func TestManifest_HashVersionAndNamespace(t *testing.T) {
 	}
 }
 
+func TestManifest_SiblingPrereqRules(t *testing.T) {
+	m := contractManifest(t)
+	got := m.Evaluate("path.flag", Context{})
+	if got.Source != SourceRule || string(got.Value) != `"off"` {
+		t.Fatalf("second sibling prereq should win: %+v", got)
+	}
+}
+
 func TestManifest_OverlappingNamespacesRejected(t *testing.T) {
 	_, err := ParseManifest([]byte(`{
 		"schemaVersion": 1,

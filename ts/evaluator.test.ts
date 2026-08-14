@@ -68,6 +68,16 @@ test("hashVersion folds into the shipped bucket seed", () => {
   assert.equal(got.value === true, wantHit);
 });
 
+test("sibling prereq rules are not stuck on the first key", () => {
+  const manifest = JSON.parse(
+    readFileSync(join(root, "testdata", "contract.manifest.json"), "utf8"),
+  ) as FlagsManifest;
+  const ev = new Evaluator(manifest);
+  const got = ev.evaluate("path.flag");
+  assert.equal(got.source, "rule");
+  assert.equal(got.value, "off");
+});
+
 test("unknown segment is rejected at prepare", () => {
   assert.throws(() => prepareManifest({
     schemaVersion: 1,

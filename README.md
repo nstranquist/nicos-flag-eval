@@ -65,6 +65,12 @@ node --experimental-strip-types examples/eval-demo.mjs
 | `docs/OFFBOARD.md` | Full decision + implementable spec |
 | `docs/PHASE-1-HOST.md` | Later host/console sanitize |
 
+## Demo host (Phase 1)
+
+Sanitized Pages + Svelte console lives in `host/`. It evaluates
+`schemas/demo.manifest.json` only. Run `make host-check`. Do not deploy
+or add a public remote.
+
 ## License
 
 MIT. Publication is still a human decision. See

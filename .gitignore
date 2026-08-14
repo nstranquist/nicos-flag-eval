@@ -10,3 +10,5 @@
 /swift-parity
 /swift-eval-demo
 /swift-contract
+/host/node_modules/
+/host/dist/

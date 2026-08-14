@@ -290,6 +290,7 @@ public final class Evaluator: @unchecked Sendable {
 public enum FlagEvalError: Error {
     case unknownSegment(String)
     case duplicateSegment(String)
+    case invalidManifest(String)
 }
 
 public func prepareManifest(_ manifest: FlagsManifest) throws -> FlagsManifest {
@@ -320,9 +321,51 @@ public func prepareManifest(_ manifest: FlagsManifest) throws -> FlagsManifest {
             }
             f.rules = next
         }
+        try validateFlag(f)
         flags.append(f)
     }
+    try checkNamespaceOverlaps(flags)
     return FlagsManifest(schemaVersion: manifest.schemaVersion, flags: flags, segments: nil)
+}
+
+func validateFlag(_ f: FlagSpec) throws {
+    if let rules = f.rules {
+        for r in rules {
+            if let vs = r.variants, !vs.isEmpty {
+                if r.value != nil {
+                    throw FlagEvalError.invalidManifest("\(f.key): variants and value are mutually exclusive")
+                }
+                let sum = vs.reduce(0) { $0 + $1.weight }
+                if sum != 100 {
+                    throw FlagEvalError.invalidManifest("\(f.key): variant weights sum to \(sum), must be 100")
+                }
+            }
+        }
+    }
+    guard let ns = f.namespace, !ns.isEmpty else { return }
+    let range = f.namespaceRange ?? [0, 0]
+    guard range.count == 2, range[0] >= 0, range[1] <= 1, range[0] < range[1] else {
+        throw FlagEvalError.invalidManifest("\(f.key): namespaceRange invalid")
+    }
+}
+
+func checkNamespaceOverlaps(_ flags: [FlagSpec]) throws {
+    var byNS: [String: [(key: String, lo: Double, hi: Double)]] = [:]
+    for f in flags {
+        guard let ns = f.namespace, !ns.isEmpty else { continue }
+        let range = f.namespaceRange ?? [0, 0]
+        guard range.count == 2 else { continue }
+        byNS[ns, default: []].append((f.key, range[0], range[1]))
+    }
+    for (ns, spans) in byNS {
+        for i in 0..<spans.count {
+            for j in (i + 1)..<spans.count {
+                if spans[i].lo < spans[j].hi && spans[j].lo < spans[i].hi {
+                    throw FlagEvalError.invalidManifest("namespace \(ns): \(spans[i].key) overlaps \(spans[j].key)")
+                }
+            }
+        }
+    }
 }
 
 public func namespaceHits(_ f: FlagSpec, _ ctx: EvalContext) -> Bool {

@@ -1,0 +1,10 @@
+# Demo Pages project. No operator inboxes, no Access identity, no
+# production host names. Dashboard secrets stay out of git.
+
+name = "flag-eval-demo"
+compatibility_date = "2026-04-01"
+pages_build_output_dir = "dist"
+
+[vars]
+EXPOSURE_SAMPLE_RATE = "1.0"
+ENVIRONMENT = "development"
