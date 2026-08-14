@@ -1,0 +1,11 @@
+/bin/
+/dist/
+/node_modules/
+/tmp/
+*.test
+*.out
+.DS_Store
+/eval-demo
+/parity-check
+/swift-parity
+/swift-eval-demo

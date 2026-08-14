@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FlagEvalManifest",
+  "type": "object",
+  "required": ["schemaVersion", "flags"],
+  "additionalProperties": false,
+  "properties": {
+    "$comment": { "type": "string" },
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "flags": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/Flag" }
+    }
+  },
+  "definitions": {
+    "Flag": {
+      "type": "object",
+      "required": ["key", "type", "default", "scope"],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]*[a-z0-9]$",
+          "description": "Stable identifier. Lowercase letters/digits with dot/dash/underscore separators."
+        },
+        "type": {
+          "enum": ["boolean", "string", "number", "json"]
+        },
+        "default": {
+          "description": "Default variation returned when no rule matches. Type must match `type`."
+        },
+        "scope": {
+          "enum": ["cross-project"]
+        },
+        "owner": { "type": "string" },
+        "description": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "exposedIn": {
+          "type": "array",
+          "items": { "enum": ["go", "ts", "swift"] },
+          "minItems": 1
+        },
+        "envVar": {
+          "type": "string",
+          "description": "Optional host-side override environment variable name."
+        },
+        "killDate": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "description": "After this date, flag forces variation to killValue (or type zero)."
+        },
+        "killValue": {
+          "description": "Value returned when killDate has passed."
+        },
+        "hashVersion": { "type": "integer", "minimum": 0 },
+        "stickyBucketing": { "type": "boolean" },
+        "namespace": { "type": "string" },
+        "namespaceRange": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "force_include": { "type": "object" },
+        "force_exclude": { "type": "array", "items": { "type": "string" } },
+        "schema": { "type": "object" },
+        "rules": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Rule" }
+        }
+      }
+    },
+    "Rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "description": { "type": "string" },
+        "if": { "$ref": "#/definitions/Predicate" },
+        "prereq": { "$ref": "#/definitions/Prereq" },
+        "rollout": { "$ref": "#/definitions/Rollout" },
+        "value": {
+          "description": "Variation returned when this rule wins."
+        },
+        "variants": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Variant" }
+        }
+      }
+    },
+    "Variant": {
+      "type": "object",
+      "required": ["key", "weight"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "weight": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "value": {}
+      }
+    },
+    "Predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "env": { "type": "string" },
+        "envs": { "type": "array", "items": { "type": "string" } },
+        "project": { "type": "string" },
+        "projects": { "type": "array", "items": { "type": "string" } },
+        "userId": { "type": "string" },
+        "userIdIn": { "type": "array", "items": { "type": "string" } },
+        "attr": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AttrConstraint" }
+        },
+        "all": { "type": "array", "items": { "$ref": "#/definitions/Predicate" } },
+        "any": { "type": "array", "items": { "$ref": "#/definitions/Predicate" } },
+        "not": { "$ref": "#/definitions/Predicate" }
+      }
+    },
+    "AttrConstraint": {
+      "type": "object",
+      "required": ["attr", "op"],
+      "additionalProperties": false,
+      "properties": {
+        "attr": { "type": "string" },
+        "op": { "type": "string" },
+        "value": { "type": "string" }
+      }
+    },
+    "Prereq": {
+      "type": "object",
+      "required": ["key", "equals"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "equals": {}
+      }
+    },
+    "Rollout": {
+      "type": "object",
+      "required": ["seed", "percentage", "by"],
+      "additionalProperties": false,
+      "properties": {
+        "seed": { "type": "string" },
+        "percentage": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "by": { "enum": ["user_id", "project", "env"] }
+      }
+    }
+  }
+}

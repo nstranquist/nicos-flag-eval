@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "flags": [
+    {
+      "key": "checkout.promo-banner",
+      "type": "boolean",
+      "default": false,
+      "scope": "cross-project",
+      "owner": "demo",
+      "description": "Show the seasonal checkout banner.",
+      "exposedIn": ["go", "ts", "swift"],
+      "rules": [
+        {
+          "description": "Always on in staging",
+          "if": { "env": "staging" },
+          "value": true
+        },
+        {
+          "description": "25 percent of production users",
+          "if": { "env": "production" },
+          "rollout": { "seed": "checkout.promo-banner", "percentage": 25, "by": "user_id" },
+          "value": true
+        }
+      ]
+    },
+    {
+      "key": "checkout.free-shipping-threshold",
+      "type": "number",
+      "default": 50,
+      "scope": "cross-project",
+      "owner": "demo",
+      "description": "Cart total that unlocks free shipping.",
+      "exposedIn": ["go", "ts", "swift"],
+      "rules": [
+        {
+          "description": "VIP attribute lowers the threshold",
+          "if": { "attr": { "plan": "vip" } },
+          "value": 0
+        }
+      ]
+    },
+    {
+      "key": "search.ranking-variant",
+      "type": "string",
+      "default": "control",
+      "scope": "cross-project",
+      "owner": "demo",
+      "description": "Search ranking experiment arm.",
+      "exposedIn": ["go", "ts", "swift"],
+      "rules": [
+        {
+          "description": "Weighted ranking arms",
+          "if": { "env": "production" },
+          "variants": [
+            { "key": "control", "weight": 50, "value": "control" },
+            { "key": "rerank-v2", "weight": 50, "value": "rerank-v2" }
+          ]
+        }
+      ]
+    }
+  ]
+}

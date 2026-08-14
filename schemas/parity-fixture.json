@@ -1,0 +1,14 @@
+{
+  "$comment": "Cross-language bucket parity fixture. Go Bucket() is the reference. TypeScript ts/evaluator.ts and Swift swift/Evaluator.swift must produce the same UInt32 modulo 100 for every (seed, attr) tuple. Update all three runtimes together if the hash contract changes.",
+  "bucket": [
+    { "seed": "delivery-packet-v2",      "attr": "user-alice",  "expected": 11 },
+    { "seed": "delivery-packet-v2",      "attr": "user-bob",    "expected": 88 },
+    { "seed": "delivery-packet-v2",      "attr": "user-carol",  "expected": 6  },
+    { "seed": "workspace.experiment.A",  "attr": "user-1",      "expected": 31 },
+    { "seed": "workspace.experiment.A",  "attr": "user-2",      "expected": 50 },
+    { "seed": "workspace.experiment.A",  "attr": "user-3",      "expected": 69 },
+    { "seed": "X",                       "attr": "",            "expected": 65 },
+    { "seed": "",                        "attr": "Y",           "expected": 10 },
+    { "seed": "longer-seed-with-dashes", "attr": "user_42",     "expected": 70 }
+  ]
+}
