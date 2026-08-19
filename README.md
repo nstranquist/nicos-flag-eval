@@ -3,9 +3,12 @@
 Portable feature-flag evaluator with deterministic Go / TypeScript / Swift
 parity. Library first. Not the factory operator plane.
 
-This is a **local extract**. Do not add a public remote. The private host
-remains `~/dev/nicos-flags`. The system remains `ndev.flags`. Read
-[`docs/OFFBOARD.md`](docs/OFFBOARD.md) before changing anything.
+Public source: https://github.com/nstranquist/nicos-flag-eval
+
+This is the portable evaluator extract. The private host remains
+`~/dev/nicos-flags`. The system remains `ndev.flags`. Do not flip
+`nstranquist/nicos-flags` public. Read [`docs/OFFBOARD.md`](docs/OFFBOARD.md)
+before changing anything.
 
 ## What this is
 

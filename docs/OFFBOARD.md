@@ -3,17 +3,18 @@
 Date: 2026-08-14
 Updated: 2026-08-19
 Status: Phase 0 engine and Phase 1 sanitized host are in this tree. Local
-`make publish-ready` is the publication gate. No public remote. Catalog
-decision: `docs/active/08-19-1011-nicos-flag-eval-public-extract/` in
-nicos-tools. This document is the implementable file-level spec. Do not
-rely on the originating chat.
+`make publish-ready` is the publication gate. Public remote:
+`https://github.com/nstranquist/nicos-flag-eval`. Do not reuse or flip
+`nstranquist/nicos-flags`. Catalog decision:
+`docs/active/08-19-1011-nicos-flag-eval-public-extract/` in nicos-tools.
 
 ## 1. Decision
 
 Extract the **portable evaluator** and a **sanitized demo host**. Keep the
 **private operator instance** at `~/dev/nicos-flags`. Do not flip any
-existing flags tree public. Do not add a public git remote. Do not extract
-the `ndev flags` command. Do not rewrite the JavaScript toolchain in bun.
+existing flags tree public. The public remote for this extract is
+`nstranquist/nicos-flag-eval`. Do not extract the `ndev flags` command.
+Do not rewrite the JavaScript toolchain in bun.
 
 This repository (`~/tools/nicos-flag-eval`) holds the Go + TypeScript +
 Swift evaluators, the synthetic demo catalog, OpenFeature, experiments, and

@@ -6,9 +6,9 @@ kind: product
 status: experimental
 persona: A team that wants deterministic feature-flag evaluation in Go, TypeScript, and Swift without a hosted vendor.
 jtbd: Evaluate a synthetic or self-authored flag catalog with cross-language FNV-1a bucket parity.
-pricing: Free and open source under MIT. Publication is still a human GitHub create.
+pricing: Free and open source under MIT.
 launch: built
-launch_blocker: Public GitHub create is a human cut. Do not reuse nstranquist/nicos-flags. npm publish stays gated. Not a hiring pin.
+launch_blocker: Public remote is github.com/nstranquist/nicos-flag-eval. Do not flip nstranquist/nicos-flags. npm publish stays gated. Not a hiring pin.
 license: MIT
 tags:
   - feature-flags
