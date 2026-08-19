@@ -10,7 +10,15 @@ This repository is local-only until a human decides otherwise.
 `git remote -v` should print nothing, or only a note remote that is not a
 public product URL.
 
-When a human is ready to publish: secret scan, denylist grep from
-`~/dev/nicos-flags/docs/flag-eval-extract.md`, signed-out README review,
-then create a **new** public repository. Do not reuse the private operator
-remote.
+Local gate before any human push:
+
+```sh
+make publish-ready
+```
+
+That target runs `make verify`, the denylist, and gitleaks. It does not
+create remotes.
+
+When a human is ready to publish: re-run `make publish-ready`, signed-out
+README review, then create a **new** public repository. Do not reuse the
+private operator remote.

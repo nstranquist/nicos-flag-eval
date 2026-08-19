@@ -1,0 +1,25 @@
+schema_version: 1
+id: product.nicos-flag-eval
+name: nicos-flag-eval
+surface: products
+kind: product
+status: experimental
+persona: A team that wants deterministic feature-flag evaluation in Go, TypeScript, and Swift without a hosted vendor.
+jtbd: Evaluate a synthetic or self-authored flag catalog with cross-language FNV-1a bucket parity.
+pricing: Free and open source under MIT. Publication is still a human GitHub create.
+launch: built
+launch_blocker: Public GitHub create is a human cut. Do not reuse nstranquist/nicos-flags. npm publish stays gated. Not a hiring pin.
+license: MIT
+tags:
+  - feature-flags
+  - evaluator
+  - open-core
+  - oss
+  - go
+  - typescript
+  - swift
+checks:
+  - name: publish-ready
+    command: [make, publish-ready]
+    timeout_seconds: 180
+description: Portable Go / TypeScript / Swift feature-flag evaluator with a synthetic demo catalog. Not the factory ndev flags plane and not the private nicos-flags host.

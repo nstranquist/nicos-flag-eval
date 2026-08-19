@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6] - 2026-08-19
+
+- Add `make publish-ready` (verify + denylist + gitleaks).
+- Add CI. Do not create a public remote.
+- Enroll local `.nicos/product.yaml` as `product.nicos-flag-eval`.
+
 ## [0.1.5] - 2026-08-14
 
 - Stop Storybook Eval and Detail stories from POSTing `/api/evaluate` on mount.

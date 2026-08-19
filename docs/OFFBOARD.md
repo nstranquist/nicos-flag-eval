@@ -1,9 +1,12 @@
 # Flags extract offboard
 
 Date: 2026-08-14  
-Status: Phase 0 engine and Phase 1 sanitized host are in this tree. No public
-remote. This document is the implementable source of truth for a later agent.
-Do not rely on the originating chat.
+Updated: 2026-08-19  
+Status: Phase 0 engine and Phase 1 sanitized host are in this tree. Local
+`make publish-ready` is the publication gate. No public remote. Catalog
+decision: `docs/active/08-19-1011-nicos-flag-eval-public-extract/` in
+nicos-tools. This document is the implementable file-level spec. Do not
+rely on the originating chat.
 
 ## 1. Decision
 
@@ -230,10 +233,8 @@ point the host at `schemas/demo.manifest.json`, keep pnpm/Wrangler/Node
 - Experiment assignment (`packages/experiments`) is provider-neutral and
   could follow the evaluator. Warehouse + stats method stay private until
   there is an external consumer.
-- Catalog enrollment as a **public** product is a non-goal. If a later
-  agent enrolls this tree, use a new id such as `product.nicos-flag-eval`,
-  license MIT, `distribution` unset or private, and do **not** mark it
-  showcase-ready.
+- Catalog enrollment uses `product.nicos-flag-eval`, license MIT, and is
+  **not** showcase-ready. Do not add a GitHub remote from an agent session.
 - `nicos-tools` must not be switched onto this module in this goal. A
   later parity check can compare `flageval.Bucket` to
   `nicos-dev/internal/flags.Bucket` on the same fixture.

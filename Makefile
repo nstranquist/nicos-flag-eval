@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT := $(abspath .)
 VERIFY_REQUIRE_SWIFT ?= 1
 
-.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift host-check packages-check
+.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift host-deps host-check packages-check denylist secret-scan publish-ready
 
 test: test-go test-ts test-swift
 
@@ -47,7 +47,12 @@ demo: require-swift
 fmt:
 	gofmt -w *.go cmd/eval-demo/main.go cmd/parity/main.go
 
-host-check:
+host-deps:
+	@if [ ! -d host/node_modules/@libsql/client ]; then \
+		pnpm --dir host install --frozen-lockfile --ignore-scripts; \
+	fi
+
+host-check: host-deps
 	node --test --experimental-strip-types \
 		host/functions/_lib/host.test.ts \
 		host/functions/_lib/flag-contract.test.ts \
@@ -67,5 +72,16 @@ packages-check:
 	node --test --experimental-strip-types packages/experiments/assignment.test.ts
 	pnpm --dir packages/openfeature test
 
-verify: fmt test parity demo host-check packages-check
+denylist:
+	node --experimental-strip-types scripts/check-denylist.mjs
+
+secret-scan:
+	@command -v gitleaks >/dev/null 2>&1 || { echo "gitleaks is required for publish-ready" >&2; exit 1; }
+	gitleaks git --redact --no-banner .
+	gitleaks dir . --no-banner --redact
+
+verify: fmt test parity demo host-check packages-check denylist
 	@echo "verify ok"
+
+publish-ready: verify secret-scan
+	@echo "publish-ready: ok (local gate; no remote created)"
