@@ -2,7 +2,7 @@ SHELL := /bin/bash
 ROOT := $(abspath .)
 VERIFY_REQUIRE_SWIFT ?= 1
 
-.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift host-deps host-check packages-check denylist secret-scan publish-ready
+.PHONY: test test-go test-ts test-swift parity demo verify fmt require-swift host-deps host-check host-demo host-demo-smoke packages-check denylist secret-scan publish-ready
 
 test: test-go test-ts test-swift
 
@@ -67,6 +67,16 @@ host-check: host-deps
 	else \
 		echo "host typescript not installed; skipped functions typecheck"; \
 	fi
+
+host-demo: host-deps
+	node host/scripts/prepare-runtime.mjs
+	cd host && ./node_modules/.bin/vite build
+	@echo "Demo host on http://127.0.0.1:8788"
+	@echo "Evaluate: curl -sS http://127.0.0.1:8788/api/evaluate -H 'content-type: application/json' -d '{\"key\":\"checkout.promo-banner\",\"ctx\":{\"userId\":\"user-alice\",\"env\":\"staging\"}}'"
+	cd host && ./node_modules/.bin/wrangler pages dev dist --ip 127.0.0.1 --port 8788 --persist-to .wrangler-demo
+
+host-demo-smoke: host-deps
+	node --experimental-strip-types scripts/host-demo-smoke.mjs
 
 packages-check:
 	node --test --experimental-strip-types packages/experiments/assignment.test.ts

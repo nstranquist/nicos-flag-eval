@@ -11,15 +11,26 @@ launch: built
 launch_blocker: Public remote is github.com/nstranquist/nicos-flag-eval. Do not flip nstranquist/nicos-flags. npm publish stays gated. Not a hiring pin.
 license: MIT
 tags:
-  - feature-flags
-  - evaluator
-  - open-core
-  - oss
-  - go
-  - typescript
-  - swift
+    - feature-flags
+    - evaluator
+    - open-core
+    - oss
+    - go
+    - typescript
+    - swift
+refs:
+    - kind: implements
+      target: recipe.nicos-flag-eval
 checks:
-  - name: publish-ready
-    command: [make, publish-ready]
-    timeout_seconds: 180
+    - name: publish-ready
+      command:
+        - make
+        - publish-ready
+      timeout_seconds: 180
 description: Portable Go / TypeScript / Swift feature-flag evaluator with a synthetic demo catalog. Not the factory ndev flags plane and not the private nicos-flags host.
+portfolio_manifest: portfolio/manifest.yaml
+recipe_id: recipe.nicos-flag-eval
+recipe_version: 1
+role: champion
+realization:
+    lineage: bind-2026-08-19

@@ -7,8 +7,8 @@
   "scripts": {
     "prepare:runtime": "node scripts/prepare-runtime.mjs",
     "dev:vite": "vite",
-    "dev:wrangler": "wrangler pages dev --proxy 5173 --port 8788",
-    "dev": "echo start vite and wrangler separately if concurrently is not installed",
+    "dev:wrangler": "wrangler pages dev dist --ip 127.0.0.1 --port 8788 --persist-to .wrangler-demo",
+    "dev": "pnpm prepare:runtime && pnpm build && pnpm dev:wrangler",
     "build": "pnpm prepare:runtime && vite build",
     "typecheck:functions": "tsc -p functions/tsconfig.json --noEmit",
     "test:host": "node --test --experimental-strip-types functions/_lib/host.test.ts scripts/evaluate-demo.test.mjs",
@@ -28,7 +28,8 @@
     "storybook": "^10.5.6",
     "svelte": "^5.46.0",
     "typescript": "^5.9.2",
-    "vite": "^7.3.5"
+    "vite": "^7.3.5",
+    "wrangler": "^4.124.0"
   },
   "packageManager": "pnpm@11.15.1+sha512.81350b07e53c9538a02f1f2303b4290fa2d7be04e56e2a970c4cc4b417dc761de196edabd49d55c7dc9580db81007c44143e4e3d7e462b3000d23c255122d065"
 }

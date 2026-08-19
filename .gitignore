@@ -13,5 +13,6 @@
 /host/node_modules/
 /host/dist/
 /host/storybook-static/
+/host/.wrangler-demo/
 /host/pnpm-workspace.yaml
 /packages/openfeature/node_modules/

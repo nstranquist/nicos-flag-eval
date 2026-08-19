@@ -26,44 +26,46 @@ before changing anything.
 
 ## Install
 
-Need Go 1.22+, Node 22+, and a Swift toolchain for three-language verify.
+Need Go 1.22+, Node 22+, and pnpm. Swift is required only for
+three-language `make verify`.
 
 ```sh
-git clone <repository>
+git clone https://github.com/nstranquist/nicos-flag-eval.git
 cd nicos-flag-eval
-make verify
+make host-check
 ```
-
-There is no public remote yet. Clone only from a local path until a human creates one.
 
 ## Quick start
 
-`make verify` fails if `swiftc` is missing; set `VERIFY_REQUIRE_SWIFT=0`
-only when you intentionally skip Swift. Node 22+ is required for
-`--experimental-strip-types`.
+Boot the sanitized demo host (console + evaluate API) on loopback:
 
 ```sh
-make verify
+make host-demo
+```
+
+Then open http://127.0.0.1:8788 or:
+
+```sh
+curl -sS http://127.0.0.1:8788/api/evaluate \
+  -H 'content-type: application/json' \
+  -d '{"key":"checkout.promo-banner","ctx":{"userId":"user-alice","env":"staging"}}'
+```
+
+Expected JSON includes `"value":true` and `"source":"rule"`.
+
+`make host-demo-smoke` boots that host, checks the same evaluate call, and
+stops. Product law is in [`PRODUCT.md`](PRODUCT.md).
+
+Language CLIs (no host) still work:
+
+```sh
 make demo
-make publish-ready
 ```
 
-Evaluate one synthetic flag through the shipped Go API:
-
-```sh
-go run ./cmd/eval-demo
-```
-
-Expected line (value and source must be non-empty):
+Expected CLI line:
 
 ```
 key=checkout.promo-banner value=true source=rule
-```
-
-TypeScript:
-
-```sh
-node --experimental-strip-types examples/eval-demo.mjs
 ```
 
 ## Usage
