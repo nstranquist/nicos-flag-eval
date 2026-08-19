@@ -22,7 +22,7 @@ before changing anything.
 ## What this is not
 
 - Not `ndev flags`, a visibility flip of `~/dev/nicos-flags`, or a bun rewrite.
-- The sanitized demo host in `host/` is in-tree. It is not a public deploy.
+- Not a production deploy. `make host-demo` is the local run path.
 
 ## Install
 
@@ -147,8 +147,8 @@ only.
 ## Demo host (Phase 1)
 
 Sanitized Pages + Svelte console lives in `host/`. It evaluates
-`schemas/demo.manifest.json` only. Run `make host-check`. Do not deploy
-or add a public remote.
+`schemas/demo.manifest.json` only. `make host-demo` is the local run
+path. Do not deploy to the private `nicos-flags` Pages project.
 
 ## Troubleshooting
 
