@@ -1,7 +1,7 @@
 # Flags extract offboard
 
-Date: 2026-08-14  
-Updated: 2026-08-19  
+Date: 2026-08-14
+Updated: 2026-08-19
 Status: Phase 0 engine and Phase 1 sanitized host are in this tree. Local
 `make publish-ready` is the publication gate. No public remote. Catalog
 decision: `docs/active/08-19-1011-nicos-flag-eval-public-extract/` in
