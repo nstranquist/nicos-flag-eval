@@ -32,6 +32,7 @@ jobs:
       - name: JS packages
         run: |
           corepack enable
+          corepack prepare pnpm@11.15.1 --activate
           pnpm --dir packages/openfeature install --frozen-lockfile
           pnpm --dir host install --frozen-lockfile --ignore-scripts
       - name: Verify without Swift
@@ -54,6 +55,7 @@ jobs:
       - name: JS packages
         run: |
           corepack enable
+          corepack prepare pnpm@11.15.1 --activate
           pnpm --dir packages/openfeature install --frozen-lockfile
           pnpm --dir host install --frozen-lockfile --ignore-scripts
       - name: Verify with Swift
