@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.7] - 2026-08-20
+
+- Pin GitHub Actions to pnpm 11.15.1 so host install matches `packageManager`.
+
 ## [0.1.6] - 2026-08-19
 
 - Add `make publish-ready` (verify + denylist + gitleaks).
